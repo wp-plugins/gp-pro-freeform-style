@@ -1,0 +1,32 @@
+=== Genesis Design Palette Pro - Freeform Style ===
+Contributors: norcross, reaktivstudios
+Requires at least: 3.7
+Tested up to: 3.8
+Stable tag: 1.0.0
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+
+Adds an area for freeform CSS entry in Genesis Design Palette Pro
+
+== Description ==
+
+Adds an area for freeform CSS entry in Genesis Design Palette Pro. Requires the [Genesis Design Palette Pro](http://genesisdesignpro.com/ "Genesis Design Palette Pro") plugin.
+
+
+== Installation ==
+1. Upload the `gppro-freeform-css` folder and all its contents to the `/wp-content/plugins/` directory
+1. Activate the plugin through the 'Plugins' menu in WordPress
+
+== Frequently Asked Questions ==
+
+= What do I do with this? =
+
+Install and activate it.
+
+== Screenshots ==
+
+== Changelog ==
+
+
+= 1.0.0 =
+* Initial release
