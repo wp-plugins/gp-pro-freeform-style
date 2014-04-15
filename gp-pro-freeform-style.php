@@ -1,14 +1,14 @@
 <?php
 /*
 Plugin Name: Genesis Design Palette Pro - Freeform Style
-Plugin URI: http://genesisdesignpro.com/
+Plugin URI: https://genesisdesignpro.com/
 Description: Adds a setting space for freeform CSS
 Author: Reaktiv Studios
-Version: 1.0.0
+Version: 1.0.1
 Requires at least: 3.7
 Author URI: http://andrewnorcross.com
 */
-/*  Copyright 2013 Andrew Norcross
+/*  Copyright 2014 Andrew Norcross
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -24,14 +24,17 @@ Author URI: http://andrewnorcross.com
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-if( !defined( 'GPCSS_BASE' ) )
+if( ! defined( 'GPCSS_BASE' ) ) {
 	define( 'GPCSS_BASE', plugin_basename(__FILE__) );
+}
 
-if( !defined( 'GPCSS_DIR' ) )
+if( ! defined( 'GPCSS_DIR' ) ) {
 	define( 'GPCSS_DIR', dirname( __FILE__ ) );
+}
 
-if( !defined( 'GPCSS_VER' ) )
-	define( 'GPCSS_VER', '1.0.0' );
+if( ! defined( 'GPCSS_VER' ) ) {
+	define( 'GPCSS_VER', '1.0.1' );
+}
 
 class GP_Pro_Freeform_CSS
 {
@@ -68,8 +71,11 @@ class GP_Pro_Freeform_CSS
 	 */
 
 	public static function getInstance() {
-		if ( !self::$instance )
+
+		if ( !self::$instance ) {
 			self::$instance = new self;
+		}
+
 		return self::$instance;
 	}
 
@@ -95,19 +101,27 @@ class GP_Pro_Freeform_CSS
 
 		$screen = get_current_screen();
 
-		if ( $screen->parent_file !== 'plugins.php' )
+		if ( $screen->parent_file !== 'plugins.php' ) {
 			return;
+		}
 
-		if ( !is_plugin_active( 'genesis-palette-pro/genesis-palette-pro.php' ) ) :
+		// look for our flag
+		$coreactive	= Genesis_Palette_Pro::check_active();
 
-			echo '<div id="message" class="error fade below-h2"><p><strong>'.__( 'This plugin requires Genesis Design Palette Pro to function.', 'gp-pro-freeform-style' ).'</strong></p></div>';
+		// not active. show message
+		if ( ! $coreactive ) :
+
+			echo '<div id="message" class="error fade below-h2"><p><strong>'.__( 'This plugin requires Genesis Design Palette Pro to function and cannot be activated.', 'gp-pro-freeform-style' ).'</strong></p></div>';
 
 			// hide activation method
 			unset( $_GET['activate'] );
 
+			// deactivate YOURSELF
 			deactivate_plugins( plugin_basename( __FILE__ ) );
 
 		endif;
+
+		return;
 
 	}
 
@@ -121,8 +135,9 @@ class GP_Pro_Freeform_CSS
 
 		$screen	= get_current_screen();
 
-		if ( $screen->base != 'genesis_page_genesis-palette-pro' )
+		if ( $screen->base != 'genesis_page_genesis-palette-pro' ) {
 			return;
+		}
 
 		wp_enqueue_style( 'gppro-freeform',		plugins_url( 'lib/css/gppro.freeform.css',	__FILE__ ),	array(), GPCSS_VER, 'all' );
 
@@ -140,8 +155,9 @@ class GP_Pro_Freeform_CSS
 
 	public function freeform_block( $blocks ) {
 
-		if ( is_multisite() && ! current_user_can( 'unfiltered_html' ) )
+		if ( is_multisite() && ! current_user_can( 'unfiltered_html' ) ) {
 			return $blocks;
+		}
 
 		$blocks['freeform-css'] = array(
 			'tab'		=> __( 'Freeform CSS', 'gp-pro-freeform-style' ),
@@ -261,23 +277,33 @@ class GP_Pro_Freeform_CSS
 	 * @return
 	 */
 
-	public function freeform_builder( $custom, $data, $class ) {
+	public function freeform_builder( $setup, $data, $class ) {
 
-		$custom	= '/* custom freeform CSS */'."\n";
+		$setup	.= '/* custom freeform CSS */'."\n";
 
-		if ( isset( $data['freeform-css-global'] ) && !empty( $data['freeform-css-global'] )  )
-			$custom	.= $data['freeform-css-global'];
+		if ( isset( $data['freeform-css-global'] ) && !empty( $data['freeform-css-global'] ) ) {
+			$setup	.= $data['freeform-css-global']."\n\n";
+		}
 
-		if ( isset( $data['freeform-css-mobile'] ) && !empty( $data['freeform-css-mobile'] )  )
-			$custom	.= '@media only screen and (max-width: 480px) {'.$data['freeform-css-mobile'].'}'."\n";
+		if ( isset( $data['freeform-css-mobile'] ) && !empty( $data['freeform-css-mobile'] )  ) {
+			$setup	.= '@media only screen and (max-width: 480px) {'."\n";
+			$setup	.= $data['freeform-css-mobile']."\n";
+			$setup	.= '}'."\n\n";
+		}
 
-		if ( isset( $data['freeform-css-tablet'] ) && !empty( $data['freeform-css-tablet'] )  )
-			$custom	.= '@media only screen and (max-width: 768px) {'.$data['freeform-css-tablet'].'}'."\n";
+		if ( isset( $data['freeform-css-tablet'] ) && !empty( $data['freeform-css-tablet'] )  ) {
+			$setup	.= '@media only screen and (max-width: 768px) {'."\n";
+			$setup	.= $data['freeform-css-tablet']."\n";
+			$setup	.= '}'."\n\n";
+		}
 
-		if ( isset( $data['freeform-css-desktop'] ) && !empty( $data['freeform-css-desktop'] )  )
-			$custom	.= '@media only screen and (min-width: 1024px) {'.$data['freeform-css-desktop'].'}'."\n";
+		if ( isset( $data['freeform-css-desktop'] ) && !empty( $data['freeform-css-desktop'] )  ) {
+			$setup	.= '@media only screen and (min-width: 1024px) {'."\n";
+			$setup	.= $data['freeform-css-desktop']."\n";
+			$setup	.= '}'."\n\n";
+		}
 
-		return $custom;
+		return $setup;
 
 	}
 
@@ -286,4 +312,3 @@ class GP_Pro_Freeform_CSS
 
 // Instantiate our class
 $GP_Pro_Freeform_CSS = GP_Pro_Freeform_CSS::getInstance();
-
