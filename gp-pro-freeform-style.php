@@ -4,7 +4,7 @@ Plugin Name: Genesis Design Palette Pro - Freeform Style
 Plugin URI: https://genesisdesignpro.com/
 Description: Adds a setting space for freeform CSS
 Author: Reaktiv Studios
-Version: 1.0.1
+Version: 1.0.2
 Requires at least: 3.7
 Author URI: http://andrewnorcross.com
 */
@@ -33,7 +33,7 @@ if( ! defined( 'GPCSS_DIR' ) ) {
 }
 
 if( ! defined( 'GPCSS_VER' ) ) {
-	define( 'GPCSS_VER', '1.0.1' );
+	define( 'GPCSS_VER', '1.0.2' );
 }
 
 class GP_Pro_Freeform_CSS
@@ -98,31 +98,26 @@ class GP_Pro_Freeform_CSS
 	 */
 
 	public function gppro_active_check() {
-
+		// get the current screen
 		$screen = get_current_screen();
-
+		// bail if not on the plugins page
 		if ( $screen->parent_file !== 'plugins.php' ) {
 			return;
 		}
-
 		// run the active check
 		$coreactive	= class_exists( 'Genesis_Palette_Pro' ) ? Genesis_Palette_Pro::check_active() : false;
-
+		// active. bail
+		if ( $coreactive ) {
+			return;
+		}
 		// not active. show message
-		if ( ! $coreactive ) :
-
-			echo '<div id="message" class="error fade below-h2"><p><strong>'.__( 'This plugin requires Genesis Design Palette Pro to function and cannot be activated.', 'gp-pro-freeform-style' ).'</strong></p></div>';
-
-			// hide activation method
-			unset( $_GET['activate'] );
-
-			// deactivate YOURSELF
-			deactivate_plugins( plugin_basename( __FILE__ ) );
-
-		endif;
-
+		echo '<div id="message" class="error fade below-h2"><p><strong>'.__( sprintf( 'This plugin requires Genesis Design Palette Pro to function and cannot be activated.' ), 'gp-pro-freeform-style' ).'</strong></p></div>';
+		// hide activation method
+		unset( $_GET['activate'] );
+		// deactivate the plugin
+		deactivate_plugins( plugin_basename( __FILE__ ) );
+		// and finish
 		return;
-
 	}
 
 	/**
